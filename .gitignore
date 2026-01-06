@@ -19,6 +19,8 @@ node_modules
 .coverage
 .hypothesis
 
+# Secrets and local data
+.envrc
 /examples/webtransport/localhost.crt
 /examples/webtransport-integrated/localhost.crt
 /examples/webtransport/localhost.key
