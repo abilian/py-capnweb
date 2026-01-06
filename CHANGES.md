@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-01-06
+
+### Added
+- **Bidirectional WebSocket Support** - Full duplex communication over WebSocket transport
+  - Chat demo example showcasing real-time bidirectional RPC
+- **`.map()` Implementation** - Server-side collection transformation with promise pipelining
+  - `WireRemap` expressions for mapping operations
+  - `MapApplicator` for executing map instructions on collections
+  - TypeScript interoperability for map operations
+
+### Changed
+- **Test Reorganization** - Restructured tests into test pyramid pattern
+  - `tests/a_unit/` - Unit tests for individual components
+  - `tests/b_integration/` - Integration tests for component interactions
+  - `tests/c_e2e/` - End-to-end tests against examples
+- **Code Quality Improvements**
+  - Replaced `isinstance()` chains with `match` statements throughout codebase
+  - Added class-level type annotations to `RpcStub` and `RpcPromise`
+  - Improved type safety with explicit casts in wire protocol handling
+- **Package Structure** - Reorganized source code into logical packages
+
+### Fixed
+- Resolved all typing errors reported by `ty` and `pyrefly` type checkers
+- Fixed all ruff linting errors including:
+  - Converted f-string logging to lazy `%` formatting (G004)
+  - Used `enumerate()` instead of manual counters (SIM113)
+- Fixed `call-top-callable` error in `TargetStubHook.dispose()` using `getattr` pattern
+- Fixed transport type narrowing in `PipelineBatch._ensure_transport()`
+
 ## [0.4.2] - 2025-10-23
 
 ### Added
