@@ -14,10 +14,33 @@ from capnweb.core.session import RpcSession
 from capnweb.core.stubs import RpcStub
 from capnweb.error import RpcError
 from capnweb.server import Server, ServerConfig
+from capnweb.types import RpcTarget
 
 
-class DataService:
+class DataService(RpcTarget):
     """Test service that provides collections for mapping."""
+
+    async def call(self, method: str, args: list[Any]) -> Any:
+        """Handle RPC method calls."""
+        match method:
+            case "get_numbers":
+                return await self.get_numbers()
+            case "get_users":
+                return await self.get_users()
+            case "get_nested_data":
+                return await self.get_nested_data()
+            case "get_empty_list":
+                return await self.get_empty_list()
+            case "get_objects_with_methods":
+                return await self.get_objects_with_methods()
+            case _:
+                msg = f"Method {method} not found"
+                raise RpcError.not_found(msg)
+
+    async def get_property(self, property: str) -> Any:
+        """Get a property - not used in these tests."""
+        msg = f"Property {property} not found"
+        raise RpcError.not_found(msg)
 
     async def get_numbers(self) -> list[int]:
         """Return a list of numbers."""

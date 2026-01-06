@@ -8,12 +8,13 @@ provide a natural, Proxy-like API.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Self
 
 from capnweb.core.payload import RpcPayload
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from capnweb.core.hooks import StubHook
     from capnweb.core.session import RpcSession
 
@@ -37,6 +38,9 @@ class RpcStub:
         value = await result
         ```
     """
+
+    _hook: StubHook
+    _session: RpcSession | None
 
     def __init__(self, hook: StubHook, session: RpcSession | None = None) -> None:
         """Initialize with a hook.
@@ -161,6 +165,9 @@ class RpcPromise:
             print(name)
         ```
     """
+
+    _hook: StubHook
+    _session: RpcSession | None
 
     def __init__(self, hook: StubHook, session: RpcSession | None = None) -> None:
         """Initialize with a hook.

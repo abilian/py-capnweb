@@ -414,7 +414,7 @@ class Server(RpcSession):
         if self._runner:
             await self._runner.cleanup()
 
-    async def _handle_batch(self, request: web.Request) -> web.Response:
+    async def _handle_batch(self, request: web.Request) -> web.Response:  # noqa: C901
         """Handle HTTP batch requests."""
         try:
             body = await request.text()
@@ -424,14 +424,14 @@ class Server(RpcSession):
 
             # DEBUG: Log for interop debugging
             logger = logging.getLogger(__name__)
-            logger.debug(f"[BATCH] Received {len(messages)} messages")
+            logger.debug("[BATCH] Received %d messages", len(messages))
             for i, msg in enumerate(messages):
                 if isinstance(msg, WirePush):
-                    logger.debug(f"  [{i}] WirePush: {msg.expression}")
+                    logger.debug("  [%d] WirePush: %s", i, msg.expression)
                 elif isinstance(msg, WirePull):
-                    logger.debug(f"  [{i}] WirePull: import_id={msg.import_id}")
+                    logger.debug("  [%d] WirePull: import_id=%d", i, msg.import_id)
                 else:
-                    logger.debug(f"  [{i}] {type(msg).__name__}: {msg}")
+                    logger.debug("  [%d] %s: %s", i, type(msg).__name__, msg)
 
             if len(messages) > self.config.max_batch_size:
                 error = WireAbort(f"Batch size {len(messages)} exceeds maximum")
@@ -467,21 +467,24 @@ class Server(RpcSession):
                     responses.append(response)
 
             # DEBUG: Log responses
-            logger.debug(f"[BATCH] Sending {len(responses)} responses")
+            logger.debug("[BATCH] Sending %d responses", len(responses))
             for i, resp in enumerate(responses):
                 if isinstance(resp, WireResolve):
-                    logger.debug(f"  [{i}] WireResolve: export_id={resp.export_id}")
+                    logger.debug("  [%d] WireResolve: export_id=%d", i, resp.export_id)
                 elif isinstance(resp, WireReject):
                     logger.debug(
-                        f"  [{i}] WireReject: export_id={resp.export_id}, error={resp.error}"
+                        "  [%d] WireReject: export_id=%d, error=%s",
+                        i,
+                        resp.export_id,
+                        resp.error,
                     )
                 else:
-                    logger.debug(f"  [{i}] {type(resp).__name__}: {resp}")
+                    logger.debug("  [%d] %s: %s", i, type(resp).__name__, resp)
 
             # Send responses
             if responses:
                 response_body = serialize_wire_batch(responses)
-                logger.debug(f"[BATCH] Response body:\n{response_body}")
+                logger.debug("[BATCH] Response body:\n%s", response_body)
                 return web.Response(
                     text=response_body,
                     content_type="application/x-ndjson",
@@ -651,7 +654,7 @@ class Server(RpcSession):
 
         return responses, push_count
 
-    async def _handle_ws_push(
+    async def _handle_ws_push(  # noqa: C901
         self, expression: Any, import_id: int, session: WebSocketServerSession
     ) -> WireMessage | None:
         """Handle a push message from client over WebSocket.
@@ -664,8 +667,9 @@ class Server(RpcSession):
         try:
             # Handle WireRemap expressions
             if isinstance(expression, WireRemap):
-                from capnweb.core.hooks import PayloadStubHook
-                from capnweb.core.mapper import MapApplicator
+                # Import here to avoid circular import at module level
+                from capnweb.core.hooks import PayloadStubHook  # noqa: PLC0415
+                from capnweb.core.mapper import MapApplicator  # noqa: PLC0415
 
                 # Get the target hook
                 target_hook = session.get_import_hook(expression.import_id)
@@ -867,7 +871,7 @@ class Server(RpcSession):
                 # Push, Pull, Resolve, Reject, Abort are handled elsewhere or not expected
                 return None
 
-    async def _handle_push(
+    async def _handle_push(  # noqa: C901
         self, expression: Any, import_id: int, imports: dict[int, StubHook]
     ) -> WireMessage | None:
         """Handle a push message - evaluate pipeline or remap expression and store result.
@@ -886,8 +890,9 @@ class Server(RpcSession):
         try:
             # Handle WireRemap expressions
             if isinstance(expression, WireRemap):
-                from capnweb.core.hooks import PayloadStubHook
-                from capnweb.core.mapper import MapApplicator
+                # Import here to avoid circular import at module level
+                from capnweb.core.hooks import PayloadStubHook  # noqa: PLC0415
+                from capnweb.core.mapper import MapApplicator  # noqa: PLC0415
 
                 # Get the target hook
                 target_hook = imports.get(expression.import_id)

@@ -7,13 +7,14 @@ expressions and the server-side MapApplicator for executing them.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from capnweb.core.payload import RpcPayload
 from capnweb.error import RpcError
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from capnweb.core.session import RpcSession
     from capnweb.core.stubs import RpcPromise
 

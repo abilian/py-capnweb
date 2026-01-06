@@ -40,6 +40,7 @@ from capnweb.transport.transports import (
 )
 
 if TYPE_CHECKING:
+    from capnweb.core.hooks import StubHook
     from capnweb.types import RpcTarget
 
 
@@ -591,7 +592,7 @@ class Client(RpcSession):
         # Similar to send_pipeline_call but with no args
         self.send_pipeline_call(import_id, path, RpcPayload.owned([]), result_import_id)
 
-    def send_pipeline_map(
+    def send_pipeline_map(  # noqa: C901
         self,
         import_id: int,
         path: list[str | int],
@@ -611,7 +612,8 @@ class Client(RpcSession):
             instructions: Operations to perform for each element
             result_import_id: Import ID for the result
         """
-        from capnweb.core.hooks import StubHook
+        # Import here to avoid circular import at module level
+        from capnweb.core.hooks import StubHook  # noqa: PLC0415
 
         # Convert captures to wire format
         wire_captures: list[WireCapture] = []
@@ -629,7 +631,8 @@ class Client(RpcSession):
                 wire_captures.append(WireCapture("import", remote_export_id))
             else:
                 # It's a local capability we need to export
-                cap_export_id = self.export_capability(cap_hook)
+                # Wrap hook in RpcStub for export_capability
+                cap_export_id = self.export_capability(RpcStub(cap_hook))
                 wire_captures.append(WireCapture("export", cap_export_id))
 
         # Build property path
@@ -653,7 +656,7 @@ class Client(RpcSession):
         pull_msg = WirePull(server_import_id)
 
         # Send in a background task
-        async def send_and_handle():
+        async def send_and_handle():  # noqa: C901
             if not self._transport:
                 return
 

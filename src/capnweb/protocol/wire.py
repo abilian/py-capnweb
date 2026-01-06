@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 
 @dataclass(frozen=True)
@@ -153,7 +153,9 @@ class WirePipeline:
             if isinstance(self.args, list):
                 # Process each argument value with escaping enabled
                 result.append([
-                    wire_expression_to_json(arg, escape_arrays=True)
+                    wire_expression_to_json(
+                        cast("WireExpression", arg), escape_arrays=True
+                    )
                     for arg in self.args
                 ])
             else:
@@ -349,12 +351,16 @@ def wire_expression_to_json(expr: WireExpression, escape_arrays: bool = False) -
         case dict():
             # Propagate escape_arrays flag to dict values (for arrays nested in objects)
             return {
-                k: wire_expression_to_json(v, escape_arrays) for k, v in expr.items()
+                k: wire_expression_to_json(cast("WireExpression", v), escape_arrays)
+                for k, v in expr.items()
             }
 
         case list():
             # Recursively serialize list items (don't propagate escaping to nested items)
-            serialized = [wire_expression_to_json(item, False) for item in expr]
+            serialized = [
+                wire_expression_to_json(cast("WireExpression", item), False)
+                for item in expr
+            ]
             # Escape arrays when needed based on context
             if escape_arrays and serialized:
                 # In TypeScript wire protocol, literal arrays must be escaped with extra wrapping

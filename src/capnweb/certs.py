@@ -68,7 +68,8 @@ def generate_self_signed_cert(
 
     # Build certificate
     cert = (
-        x509.CertificateBuilder()
+        x509
+        .CertificateBuilder()
         .subject_name(subject)
         .issuer_name(issuer)
         .public_key(private_key.public_key())
@@ -108,19 +109,17 @@ def generate_self_signed_cert(
 
     # Write certificate
     cert_path = output_dir / f"{hostname}.crt"
-    with Path(cert_path).open("wb") as f:
-        f.write(cert.public_bytes(serialization.Encoding.PEM))
+    Path(cert_path).write_bytes(cert.public_bytes(serialization.Encoding.PEM))
 
     # Write private key
     key_path = output_dir / f"{hostname}.key"
-    with Path(key_path).open("wb") as f:
-        f.write(
-            private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption(),
-            )
+    Path(key_path).write_bytes(
+        private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
         )
+    )
 
     return cert_path, key_path
 
@@ -171,8 +170,7 @@ def load_certificate(cert_path: Path | str) -> x509.Certificate:
         ValueError: If the file is not a valid PEM certificate
     """
     cert_path = Path(cert_path)
-    with Path(cert_path).open("rb") as f:
-        cert_data = f.read()
+    cert_data = Path(cert_path).read_bytes()
 
     return x509.load_pem_x509_certificate(cert_data)
 
@@ -191,8 +189,7 @@ def load_private_key(key_path: Path | str) -> RSAPrivateKey:
         ValueError: If the file is not a valid PEM private key
     """
     key_path = Path(key_path)
-    with Path(key_path).open("rb") as f:
-        key_data = f.read()
+    key_data = Path(key_path).read_bytes()
 
     key = serialization.load_pem_private_key(key_data, password=None)
 

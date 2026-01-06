@@ -199,7 +199,9 @@ class PipelineBatch:
             self._client._transport = create_transport(
                 self._client.config.url, timeout=self._client.config.timeout
             )
-            await self._client._transport.__aenter__()  # noqa: PLC2801
+        transport = self._client._transport
+        assert transport is not None
+        await transport.__aenter__()  # noqa: PLC2801
 
     def _build_batch_messages(self) -> tuple[list[WireMessage], dict[int, ImportId]]:
         """Build the batch of push and pull messages.
@@ -211,10 +213,11 @@ class PipelineBatch:
         """
         messages: list[WireMessage] = []
         server_to_client_id_map: dict[int, ImportId] = {}
-        server_export_id = 1
 
         # Add push messages and build ID map
-        for client_import_id, call_or_expr in self._pending_calls.items():
+        for server_export_id, (client_import_id, call_or_expr) in enumerate(
+            self._pending_calls.items(), start=1
+        ):
             if isinstance(call_or_expr, PendingCall):
                 pending_call = call_or_expr
                 # Build property path including method name
@@ -235,7 +238,6 @@ class PipelineBatch:
 
             # Map server's implicit export ID to client-side import ID
             server_to_client_id_map[server_export_id] = client_import_id
-            server_export_id += 1
 
         # Add pull messages for all export IDs (using server-side sequential IDs)
         messages.extend(WirePull(server_id) for server_id in server_to_client_id_map)

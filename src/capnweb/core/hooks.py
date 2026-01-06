@@ -508,14 +508,12 @@ class TargetStubHook(StubHook):
         self.ref_count -= 1
 
         # Notify target when refcount reaches 0 if it implements disposal
-        if (
-            self.ref_count == 0
-            and hasattr(self.target, "dispose")
-            and callable(self.target.dispose)
-        ):
-            # Ignore disposal errors - best effort cleanup
-            with suppress(Exception):
-                self.target.dispose()
+        if self.ref_count == 0:
+            dispose_method = getattr(self.target, "dispose", None)
+            if dispose_method is not None and callable(dispose_method):
+                # Ignore disposal errors - best effort cleanup
+                with suppress(Exception):
+                    dispose_method()
 
     def dup(self) -> Self:
         """Increment reference count."""

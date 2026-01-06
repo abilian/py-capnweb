@@ -6,7 +6,7 @@ install:
 	uv sync
 
 test:
-	pytest tests -v
+	pytest tests
 	cd interop && ./run_tests.sh
 
 test-cov:
