@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def main():  # noqa: C901
+async def main():
     """Run the microservices demo client."""
     # Connect to API Gateway
     config = ClientConfig(url="http://127.0.0.1:8080/rpc/batch")

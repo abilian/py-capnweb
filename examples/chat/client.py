@@ -72,7 +72,7 @@ async def read_input() -> str:
     return await loop.run_in_executor(None, sys.stdin.readline)
 
 
-async def main():  # noqa: C901
+async def main():
     """Run the interactive chat client."""
     print("=== Cap'n Web Chat Client ===")
     print()

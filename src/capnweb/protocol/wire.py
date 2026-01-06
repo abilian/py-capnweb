@@ -271,7 +271,7 @@ WireExpression = (
 )
 
 
-def wire_expression_from_json(value: Any) -> WireExpression:  # noqa: C901
+def wire_expression_from_json(value: Any) -> WireExpression:
     """Parse a wire expression from JSON."""
     match value:
         case None | bool() | int() | float() | str():
@@ -462,7 +462,7 @@ class WireAbort:
 WireMessage = WirePush | WirePull | WireResolve | WireReject | WireRelease | WireAbort
 
 
-def parse_wire_message(data: str) -> WireMessage:  # noqa: C901
+def parse_wire_message(data: str) -> WireMessage:
     """Parse a wire message from JSON string."""
     arr = json.loads(data)
     if not isinstance(arr, list) or not arr:

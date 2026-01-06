@@ -414,7 +414,7 @@ class Server(RpcSession):
         if self._runner:
             await self._runner.cleanup()
 
-    async def _handle_batch(self, request: web.Request) -> web.Response:  # noqa: C901
+    async def _handle_batch(self, request: web.Request) -> web.Response:
         """Handle HTTP batch requests."""
         try:
             body = await request.text()
@@ -654,7 +654,7 @@ class Server(RpcSession):
 
         return responses, push_count
 
-    async def _handle_ws_push(  # noqa: C901
+    async def _handle_ws_push(
         self, expression: Any, import_id: int, session: WebSocketServerSession
     ) -> WireMessage | None:
         """Handle a push message from client over WebSocket.
@@ -871,7 +871,7 @@ class Server(RpcSession):
                 # Push, Pull, Resolve, Reject, Abort are handled elsewhere or not expected
                 return None
 
-    async def _handle_push(  # noqa: C901
+    async def _handle_push(
         self, expression: Any, import_id: int, imports: dict[int, StubHook]
     ) -> WireMessage | None:
         """Handle a push message - evaluate pipeline or remap expression and store result.

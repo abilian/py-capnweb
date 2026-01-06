@@ -592,7 +592,7 @@ class Client(RpcSession):
         # Similar to send_pipeline_call but with no args
         self.send_pipeline_call(import_id, path, RpcPayload.owned([]), result_import_id)
 
-    def send_pipeline_map(  # noqa: C901
+    def send_pipeline_map(
         self,
         import_id: int,
         path: list[str | int],
@@ -656,7 +656,7 @@ class Client(RpcSession):
         pull_msg = WirePull(server_import_id)
 
         # Send in a background task
-        async def send_and_handle():  # noqa: C901
+        async def send_and_handle():
             if not self._transport:
                 return
 
